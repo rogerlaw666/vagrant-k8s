@@ -5,7 +5,7 @@ require 'rbconfig'
 
 
 # Change to NAT if needed (BRIDGE is default)
-BUILD_MODE = ENV['BUILD_MODE'] || "BRIDGE" 
+BUILD_MODE = ENV['BUILD_MODE'] || "NAT" 
 IP_NW = "192.168.56"
 MASTER_IP_START = 10
 NODE_IP_START = 20
@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/debian-12"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = 2048
+    vb.memory = 4096
     vb.cpus = 2
   end
 
@@ -41,8 +41,8 @@ Vagrant.configure("2") do |config|
       node.vm.network "private_network", ip: "#{IP_NW}.#{MASTER_IP_START}"
     end
     node.vm.provision "shell" do |s|
-      s.name = "configure-firewall"
-      s.path = "scripts/configure-control-plane-firewall.sh"
+      s.name = "configure-control-plane"
+      s.path = "scripts/configure-control-plane.sh"
       s.privileged = true
     end
   end
@@ -58,11 +58,13 @@ Vagrant.configure("2") do |config|
         node.vm.network "private_network", ip: "#{IP_NW}.#{NODE_IP_START + i}"
       end
       node.vm.provider "virtualbox" do |vb|
-        vb.cpus = 1
+        vb.memory = 4096
+        vb.cpus = 2
       end
       node.vm.provision "shell" do |s|
-        s.name = "configure-firewall"
-        s.path = "scripts/configure-worker-node-firewall.sh"
+        s.name = "configure-worker"
+        s.path = "scripts/configure-worker.sh"
+        s.args = ["#{hostname}"]
         s.privileged = true
       end
     end

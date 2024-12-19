@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+export http_proxy=http://192.168.2.100:7890 https_proxy=http://192.168.2.100:7890 all_proxy=http://192.168.2.100:7890 no_proxy=localhost,127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+
 cleanup() {
   echo "Cleaning up ..."
   rm -fv containerd.tar.gz || true
@@ -37,4 +39,7 @@ curl -LfsS https://github.com/containernetworking/plugins/releases/download/v${C
 mkdir -p /opt/cni/bin
 tar Cxzvf /opt/cni/bin cni-plugins.tgz
 
+mkdir -p /etc/systemd/system/containerd.service.d
+cp /vagrant/conf/http-proxy.conf /etc/systemd/system/containerd.service.d/http-proxy.conf
+systemctl daemon-reload
 systemctl restart containerd

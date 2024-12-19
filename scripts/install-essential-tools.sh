@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+echo 'deb http://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware
+deb http://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib non-free non-free-firmware
+deb http://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free non-free-firmware
+deb http://mirrors.tuna.tsinghua.edu.cn/debian-security bookworm-security main contrib non-free non-free-firmware
+' | tee /etc/apt/sources.list
+
 export DEBIAN_FRONTEND=noninteractive
 export DEBIAN_PRIORITY=critical
 
@@ -16,7 +22,7 @@ apt-get --quiet --yes install git \
                             curl ufw \
                             wget htop jq net-tools resolvconf socat
 
-timedatectl set-timezone 'Asia/Ho_Chi_Minh'
+timedatectl set-timezone 'Asia/Shanghai'
 timedatectl set-ntp true
 dpkg-reconfigure --frontend=${DEBIAN_FRONTEND} tzdata
 
